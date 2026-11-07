@@ -264,7 +264,7 @@ su -
 
 2. System auf den allerneuesten Stand bringen
 ```
-apt update && apt upgrade -y
+apt update && apt upgrade -y && apt dist-upgrade -y
 ```
 
 3. Ordner für den IPFire-Quellcode wechseln
@@ -298,16 +298,15 @@ mv /home/ipfire_build/rpi5-changes.patch /home/ipfire_build/ipfire-2.x/
 ```
 patch -p1 < rpi5-changes.patch
 ```
+
 8. Build starten für Aarch64 (Raspberry Pi 5)
 
 ```          
 sudo ./make.sh --target=aarch64 downloadsrc
 sudo ./make.sh --target=aarch64 gettoolchain
 sudo ./make.sh clean
-sudo mv /home/ipfire_build/rpi5-changes.patch /home/ipfire_build/ipfire-2.x/
 sudo ./make.sh --target=aarch64 build
 ```
-
 <b>Hinweis:</b> Die Build-Umgebung ist sehr ressourcenintensiv. 
                 Es wird empfohlen, mindestens 16 GB RAM, einen leistungsstarken Prozessor und ausreichend Speicherplatz (mindestens 100 GB) zu haben, um den Build-Prozess erfolgreich abzuschließen.
                 Und je nach Systemleistung kann das Builden mehrere Stunden dauern.
@@ -315,8 +314,24 @@ sudo ./make.sh --target=aarch64 build
                 Dabei ist zu Beachten, dass die CPU-Temperatur während des Builds überwacht wird, um Überhitzung zu vermeiden. 
                 Ein aktives Kühlsystem oder eine gute Belüftung ist daher empfehlenswert.
 
+9. Fehlermeldung: "bcm2712-rpi-5-b.dtb" fehlt
 
-9. Nach erfolgreichem Build wird das Image in images_aarch64/ipfire-2.29-core200-aarch64.img.xz erstellt.
+    1. Führe diesen Suchbefehl aus, um das gesamte Build-Verzeichnis nach der fehlenden Datei zu durchforsten
+    ```
+    cd /home/ipfire_build/ipfire-2.x
+    find . -name "bcm2712-rpi-5-b.dtb"
+    ```
+    2. Wenn die Datei gefunden wird: b.e. Verschiebe die Datei in das Verzeichnis /home/ipfire_build/ipfire-2.x
+    ```
+    sudo cp ./build_aarch64/boot/dtb-x.xx.xx-ipfire/broadcom/bcm2712-rpi-5-b.dtb ./build_aarch64/boot/bcm2712-rpi-5-b.dtb
+    ```
+
+    3. Build erneut starten für Aarch64 (Raspberry Pi 5)
+    ```
+    sudo ./make.sh --target=aarch64 build
+    ```
+
+10. Nach erfolgreichem Build wird das Image in images_aarch64/ipfire-2.29-core20x-aarch64.img.xz erstellt.
 
 
 ## 2. Netzwerkadapter konfigurieren:
